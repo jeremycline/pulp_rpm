@@ -95,7 +95,7 @@ class TestPackages(HandlerTest):
             deps = YumBase.UPDATE_DEPS
         for unit in removed:
             resolved.append(unit)
-            deps = YumBase.REMOVE_DEPS
+            deps = YumBase.ERASE_DEPS
         self.assertTrue(report.succeeded)
         num_changes = len(resolved) + len(deps)
         if reboot:
@@ -357,7 +357,7 @@ class TestGroups(HandlerTest):
             deps = YumBase.INSTALL_DEPS
         for group in removed:
             resolved += [str(p) for p in YumBase.GROUPS[group]]
-            deps = YumBase.REMOVE_DEPS
+            deps = YumBase.ERASE_DEPS
         self.assertTrue(report.succeeded)
         num_changes = len(resolved)+len(deps)
         if reboot:

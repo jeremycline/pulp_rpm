@@ -2,6 +2,7 @@
 import mock
 
 from yum.Errors import InstallError
+from yum import constants
 
 
 def install():
@@ -26,11 +27,11 @@ class Pkg:
 
 class TxMember:
 
-     def __init__(self, state, repoid, pkg, isDep=0):
-         self.ts_state = state
-         self.repoid = repoid
-         self.isDep = isDep
-         self.po = pkg
+    def __init__(self, state, repoid, pkg, isDep=0):
+        self.output_state = state
+        self.repoid = repoid
+        self.isDep = isDep
+        self.po = pkg
 
 
 class Config(object):
@@ -43,23 +44,23 @@ class YumBase:
 
     INSTALL_DEPS = [
         Pkg('dep1', '3.2'),
-        Pkg('dep2', '2.5', '1'),
+        Pkg('dep2', '2.5', 1),
     ]
 
     UPDATE_DEPS = [
         Pkg('dep1', '3.2'),
-        Pkg('dep2', '2.5', '1'),
+        Pkg('dep2', '2.5', 1),
     ]
 
-    REMOVE_DEPS = [
+    ERASE_DEPS = [
         Pkg('dep1', '3.2'),
-        Pkg('dep2', '2.5', '1'),
+        Pkg('dep2', '2.5', 1),
     ]
 
     STATES = {
-        'i':INSTALL_DEPS,
-        'u':UPDATE_DEPS,
-        'e':REMOVE_DEPS,
+        constants.TS_INSTALL: INSTALL_DEPS,
+        constants.TS_UPDATE: UPDATE_DEPS,
+        constants.TS_ERASE: ERASE_DEPS,
     }
 
     REPOID = 'fedora'
@@ -72,7 +73,7 @@ class YumBase:
         ],
         'pulp':[
             Pkg('okaara', '0.25'),
-            Pkg('gofer', '0.70', '2'),
+            Pkg('gofer', '0.70', 2),
             Pkg('mongo', '1.3.2'),
             Pkg('qpid', '0.70'),
         ],
@@ -100,7 +101,7 @@ class YumBase:
 
     def install(self, pattern):
         if pattern != YumBase.UNKNOWN_PKG:
-            state = 'i'
+            state = constants.TS_INSTALL
             version = '1.0'
             repoid = self.REPOID
             self.__validpkg(pattern)
@@ -111,7 +112,7 @@ class YumBase:
             raise InstallError('package not found')
 
     def update(self, pattern):
-        state = 'u'
+        state = constants.TS_UPDATE
         version = '1.0'
         repoid = self.REPOID
         self.__validpkg(pattern)
@@ -120,7 +121,7 @@ class YumBase:
         self.tsInfo.append(t)
 
     def remove(self, pattern):
-        state = 'e'
+        state = constants.TS_ERASE
         version = '1.0'
         repoid = self.REPOID
         self.__validpkg(pattern)
@@ -133,21 +134,21 @@ class YumBase:
             raise Exception('package not found')
 
     def selectGroup(self, name):
-        state = 'i'
+        state = constants.TS_INSTALL
         repoid = self.REPOID
         grp = self.GROUPS.get(name)
         if grp is None:
-            raise Exception, 'Group not found'
+            raise Exception('Group not found')
         for pkg in grp:
             t = TxMember(state, repoid, pkg)
             self.tsInfo.append(t)
 
     def groupRemove(self, name):
-        state = 'e'
+        state = constants.TS_ERASE
         repoid = self.REPOID
         grp = self.GROUPS.get(name)
         if grp is None:
-            raise Exception, 'Group not found'
+            raise Exception('Group not found')
         for pkg in grp:
             t = TxMember(state, repoid, pkg)
             self.tsInfo.append(t)
@@ -156,7 +157,7 @@ class YumBase:
         deps = {}
         repoid = self.REPOID
         for t in self.tsInfo:
-            deps[t.ts_state] = self.STATES[t.ts_state]
+            deps[t.output_state] = self.STATES[t.output_state]
         for state, pkglist in deps.items():
             for pkg in pkglist:
                 t = TxMember(state, repoid, pkg, 1)

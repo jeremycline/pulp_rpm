@@ -32,9 +32,10 @@ class TestPackages(ToolTest):
             deps = YumBase.UPDATE_DEPS
         for package in removed:
             resolved.append(package)
-            deps = YumBase.REMOVE_DEPS
+            deps = YumBase.ERASE_DEPS
         self.assertEquals(len(report['resolved']), len(resolved))
         self.assertEquals(len(report['deps']), len(deps))
+        self.assertEquals(len(report['failed']), 0)
 
     def test_install(self):
         # Setup
@@ -191,7 +192,7 @@ class TestGroups(ToolTest):
             deps = YumBase.INSTALL_DEPS
         for group in removed:
             resolved += [str(p) for p in YumBase.GROUPS[group]]
-            deps = YumBase.REMOVE_DEPS
+            deps = YumBase.ERASE_DEPS
         self.assertEquals(len(report['resolved']), len(resolved))
         self.assertEquals(len(report['deps']), len(deps))
 
