@@ -547,6 +547,18 @@ class TestProgressReport(unittest.TestCase):
             self.assertTrue(step[1])
             i += 1
 
+    def test_event(self):
+        package = 'openssl'
+        pr = Mock()
+        cb = self.RPMCallback(pr)
+        expected_actions = set()
+        for action, description in cb.action.items():
+            cb.event(package, action)
+            cb.event(package, action)  # test 2nd (dup) ignored
+            expected_actions.add((package, action))
+            self.assertEqual(cb.events, expected_actions)
+            pr.set_action.assert_called_with(description, package)
+
     def test_action(self):
         pr = self.ProgressReport()
         pr._updated = Mock()
@@ -599,6 +611,14 @@ class TestProgressReport(unittest.TestCase):
         cb.errorlog(message)
         self.assertEqual(pr.details['error'], message)
         self.assertEqual(len(pr.steps), 0)
+
+    def test_verify_txmbr(self):
+        pr = Mock()
+        tx = Mock()
+        tx.po = 'openssl'
+        cb = self.RPMCallback(pr)
+        cb.verify_txmbr(None, tx, 10)
+        pr.set_action.assert_called_with('Verifying', tx.po)
 
     def test_download_callback(self):
         FILES = ('A', 'B', 'C')
