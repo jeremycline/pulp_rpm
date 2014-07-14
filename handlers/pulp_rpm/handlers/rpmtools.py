@@ -128,11 +128,11 @@ class Package:
         """
         yb = Yum(self.importkeys, self.progress)
         try:
-            for info in names:
+            for pattern in names:
                 try:
-                    yb.install(pattern=info)
+                    yb.install(pattern=pattern)
                 except InstallError, caught:
-                    caught.value = '%s: %s' % (info, str(caught))
+                    caught.value = '%s: %s' % (pattern, str(caught))
                     raise caught
             yb.resolveDeps()
             if self.apply and len(yb.tsInfo):
@@ -154,8 +154,8 @@ class Package:
         """
         yb = Yum(progress=self.progress)
         try:
-            for info in names:
-                yb.remove(pattern=info)
+            for pattern in names:
+                yb.remove(pattern=pattern)
             yb.resolveDeps()
             if self.apply and len(yb.tsInfo):
                 yb.processTransaction()
@@ -178,8 +178,8 @@ class Package:
         yb = Yum(self.importkeys, self.progress)
         try:
             if names:
-                for info in names:
-                    yb.update(pattern=info)
+                for pattern in names:
+                    yb.update(pattern=pattern)
             else:
                 yb.update()
             yb.resolveDeps()

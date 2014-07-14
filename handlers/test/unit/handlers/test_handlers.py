@@ -189,12 +189,18 @@ class TestPackages(HandlerTest):
     @patch.object(mock_yum.YumBase, 'install')
     def test_install_all_fields(self, mock_yum_install):
         # Setup
-        units = [{'type_id': self.TYPE_ID, 'unit_key': {'name': 'zsh',
-                                                        'epoch': '3',
-                                                        'version': '2.2',
-                                                        'release': '3.3',
-                                                        'arch': 'x86_64'
-                                                        }}]
+        units = [
+            {
+                'type_id': self.TYPE_ID,
+                'unit_key': {
+                    'name': 'zsh',
+                    'epoch': '3',
+                    'version': '2.2',
+                    'release': '3.3',
+                    'arch': 'x86_64'
+                }
+            }
+        ]
         # Test
         conduit = Conduit()
         self.dispatcher.install(conduit, units, {})
