@@ -43,7 +43,7 @@ class Package:
         :param states: A list of yum transaction states.
         :type states: tuple|list
         :return: {resolved=[Package,],deps=[Package,], failed=[Package,]}
-        :rtype: tuple
+        :rtype: dict
         """
         deps = []
         resolved = []
@@ -455,7 +455,7 @@ class DownloadCallback(DownloadBaseCallback):
         DownloadBaseCallback.__init__(self)
         self.report = report
 
-    def _do_start( self, now=None):
+    def _do_start(self, now=None):
         """
         Notification that a file download has started.
         The event is forwarded to the report object to be consolidated
