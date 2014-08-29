@@ -348,46 +348,6 @@ class TestCertVerify(unittest.TestCase):
         """
         self.assertTrue(self.utils.validate_certificate(CERT, VALID_CA))
 
-    def test_invalid(self):
-        """
-        Tests that verifying a cert with an incorrect CA returns false.
-        """
-        self.assertTrue(not self.utils.validate_certificate(CERT, INVALID_CA))
-
-    def test_valid_pem(self):
-        """
-        Tests that verifying a PEM encoded cert string with its signing CA returns true.
-        """
-
-        # Setup
-        f = open(VALID_CA)
-        ca = f.read()
-        f.close()
-
-        f = open(CERT)
-        cert = f.read()
-        f.close()
-
-        # Test
-        self.assertTrue(self.utils.validate_certificate_pem(cert, ca))
-
-    def test_invalid_pem(self):
-        """
-        Tests that verifying a PEM encoded cert string with an incorrect CA returns false.
-        """
-
-        # Setup
-        f = open(INVALID_CA)
-        ca = f.read()
-        f.close()
-
-        f = open(CERT)
-        cert = f.read()
-        f.close()
-
-        # Test
-        self.assertTrue(not self.utils.validate_certificate_pem(cert, ca))
-
     def test_get_certs_from_string_empty(self):
         certs = self.utils.get_certs_from_string("")
         self.assertEquals(len(certs), 0)
@@ -434,31 +394,4 @@ class TestCertVerify(unittest.TestCase):
         parsed_certs = self.utils.get_certs_from_string(many_certs)
         self.assertTrue(len(parsed_certs), self.utils.max_num_certs_in_chain)
 
-    def test_validate_certificate_pem_with_ca_chain(self):
-        ca_chain_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/ca_chain")
-        test_cert_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/test_cert.pem")
 
-        ca_chain_pems = open(ca_chain_path).read()
-        test_cert_pem = open(test_cert_path).read()
-
-        self.assertTrue(self.utils.validate_certificate_pem(test_cert_pem, ca_chain_pems))
-
-    def test_validate_certificate_pem_with_incomplete_ca_chain(self):
-        ca_chain_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/ROOT_CA/root_ca.pem")
-        test_cert_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/test_cert.pem")
-
-        ca_chain_pems = open(ca_chain_path).read()
-        test_cert_pem = open(test_cert_path).read()
-        self.assertFalse(self.utils.validate_certificate_pem(test_cert_pem, ca_chain_pems))
-
-        ca_chain_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/SUB_CA/sub_ca.pem")
-        ca_chain_pems = open(ca_chain_path).read()
-        self.assertFalse(self.utils.validate_certificate_pem(test_cert_pem, ca_chain_pems))
-
-    def test_validate_certificate_pem_with_ca_chain_and_valid_cert(self):
-        ca_chain_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/ca_chain")
-        test_cert_path = os.path.join(CA_CHAIN_TEST_DATA, "certs/test_cert.pem")
-
-        ca_chain_pems = open(ca_chain_path).read()
-        test_cert_pem = open(test_cert_path).read()
-        self.assertTrue(self.utils.validate_certificate_pem(test_cert_pem, ca_chain_pems))

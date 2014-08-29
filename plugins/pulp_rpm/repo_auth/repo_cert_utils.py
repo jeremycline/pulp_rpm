@@ -38,7 +38,6 @@ import os
 
 from M2Crypto import X509, BIO
 from pulp.common.util import encode_unicode
-from pulp.server.common.openssl import Certificate
 
 
 LOG = logging.getLogger(__name__)
@@ -283,37 +282,8 @@ class RepoCertUtils:
         @return: true if the certificate was signed by the given CA; false otherwise
         @rtype:  boolean
         '''
-        if not log_func:
-            log_func = LOG.info
-        cert = X509.load_cert_string(cert_pem)
-        ca_chain = self.get_certs_from_string(ca_pem, log_func)
-        return self.x509_verify_cert(cert, ca_chain, log_func=log_func)
-
-    def x509_verify_cert(self, cert, ca_certs, log_func=None):
-        """
-        Validates a Certificate against a CA Certificate.
-
-        @param  cert:  Client certificate to verify
-        @type   cert:  M2Crypto.X509.X509
-
-        @param  ca_certs:  Chain of CA Certificates
-        @type   ca_certs:  [M2Crypto.X509.X509]
-
-        @param  log_func:  Logging function
-        @param  log_func:  Function accepting a single string
-
-        @return: true if the certificate is verified by OpenSSL APIs, false otherwise
-        @rtype:  boolean
-        """
-        certificate = Certificate(cert.as_pem())
-        ca_chain = [Certificate(c.as_pem()) for c in ca_certs]
-        retval = certificate.verify(ca_chain)
-        if retval != 1 and log_func:
-            msg = "Cert verification failed against %d ca cert(s)" % len(ca_certs)
-            if self.log_failed_cert:
-                msg += "\n%s" % self.get_debug_info_certs(cert, ca_certs)
-            log_func(msg)
-        return retval
+        # The certificate is verified by apache.
+        return True
 
     def validate_cert_bundle(self, bundle):
         '''

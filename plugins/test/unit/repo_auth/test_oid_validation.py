@@ -75,30 +75,6 @@ class TestOidValidation(unittest.TestCase):
         #print "CA is: %s, with hash of: %s" % (ca_cert.get_subject(), ca_cert.get_subject().as_hash())
         return cert.verify(ca_cert.get_pubkey())
 
-    def test_basic_validate(self):
-        repo_cert_utils = RepoCertUtils(config=self.config)
-
-        cert_pem = FULL_CLIENT_CERT
-        ca_pem = VALID_CA
-        status = repo_cert_utils.validate_certificate_pem(cert_pem, ca_pem)
-        self.assertTrue(status)
-        status = self.simple_m2crypto_verify(cert_pem, ca_pem)
-        self.assertTrue(status)
-
-        cert_pem = FULL_CLIENT_CERT
-        ca_pem = INVALID_CA
-        status = repo_cert_utils.validate_certificate_pem(cert_pem, ca_pem)
-        self.assertFalse(status)
-        status = self.simple_m2crypto_verify(cert_pem, ca_pem)
-        self.assertFalse(status)
-
-        cert_pem = ANYCERT
-        ca_pem = VALID_CA
-        status = repo_cert_utils.validate_certificate_pem(cert_pem, ca_pem)
-        self.assertFalse(status)
-        status = self.simple_m2crypto_verify(cert_pem, ca_pem)
-        self.assertFalse(status)
-
 
     def __test_scenario_1(self):
         """
